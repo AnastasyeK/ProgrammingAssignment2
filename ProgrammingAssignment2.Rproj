@@ -1,13 +1,39 @@
-Version: 1.0
+# This function create a matrix to be used for computing the inverse calculation.
 
-RestoreWorkspace: Default
-SaveWorkspace: Default
-AlwaysSaveHistory: Default
 
-EnableCodeIndexing: Yes
-UseSpacesForTab: Yes
-NumSpacesForTab: 2
-Encoding: UTF-8
+makeCacheMatrix <- function(x = matrix()) {
+    InvMatrix <- NULL
+    set <- function(y){   #set value of the newly created matrix
+      x <<- y
+      InvMatrix <<- NULL
+    }
+    get <- function() x  #get the value of the matrix from the function
+    setInv <- function(inverse) InvMatrix <<- inverse  #set the value of the inverse matrix
+    getInv <- function() InvMatrix  #get the vaue of inverse matrix
+    list(set = set, get = get, setInv = setInv, getInv = getInv)
+}
 
-RnwWeave: Sweave
-LaTeX: pdfLaTeX
+
+# This funtion will compute the inverse of a given matrix if it hasn't been
+# done previously OR retun the computed value if it was already calculated.
+
+cacheSolve <- function(x, ...) {
+  InvMatrix <- x$getInv()
+  if(!is.null(InvMatrix)){  #chcek if the inverse of the matrix was already computed
+    message("getting cache inverse matrix data")  #If so, return this message
+    return(InvMatrix) #Display the inverse value
+  }
+  dataMatrix <- x$get()  #if it was not calculated
+  InvMatrix <- solve(dataMatrix, ...) #Take the inverse of the matrix
+  x$setInv(InvMatrix)
+  return(InvMatrix) # And return the inverse value calculated
+}
+
+# Testing the function:
+
+Matrix1 <- matrix(1:6, 2, 2) #create a matrix
+Matrix1
+cacheMetrix <- makeCacheMatrix(Matrix1)  #assign to new variable 
+cacheMetrix$getInv()  #check if inverse was already computed
+cacheSolve(cacheMetrix)  #compute the inverse
+
